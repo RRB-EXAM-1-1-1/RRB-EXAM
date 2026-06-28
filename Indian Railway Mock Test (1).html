@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RRB महा-सराव परीक्षा पत्र (CBT Model)</title>
+    <style>
+        :root {
+            --bg-primary: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --border-color: #e5e7eb;
+            --palette-unvisited: #e5e7eb;
+            --palette-notanswered: #ef4444;
+            --palette-answered: #10b981;
+            --palette-review: #8b5cf6;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --border-color: #334155;
+            --palette-unvisited: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--bg-card);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .header-title h1 { font-size: 1.1rem; color: var(--primary-color); font-weight: 700; }
+        .header-title p { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+        .header-controls { display: flex; gap: 8px; }
+
+        .btn-utility {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-utility:hover { background: var(--border-color); }
+
+        .progress-container {
+            background-color: var(--border-color);
+            height: 5px;
+            width: 100%;
+        }
+
+        .progress-bar {
+            background-color: var(--palette-answered);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .exam-area {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+            background-color: var(--bg-card);
+        }
+
+        .section-indicator {
+            background-color: var(--bg-primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            display: inline-block;
+        }
+
+        .question-box h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .options-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            background-color: var(--bg-card);
+        }
+
+        .option-item:hover { background-color: var(--bg-primary); border-color: var(--text-muted); }
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.08);
+            font-weight: 500;
+        }
+
+        .option-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-card);
+        }
+
+        .action-group { display: flex; gap: 8px; }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-prev { background: var(--bg-primary); color: var(--text-main); border-color: var(--border-color); }
+        .btn-clear { background: transparent; color: #ef4444; }
+        .btn-review { background: #f59e0b; color: white; }
+        .btn-next { background: var(--primary-color); color: white; }
+        .btn-next:hover { background: var(--primary-hover); }
+        .btn-submit { background: #10b981; color: white; width: 100%; justify-content: center; padding: 12px; }
+
+        .sidebar {
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--border-color);
+            max-height: 45vh;
+            overflow-y: auto;
+        }
+
+        .timer-panel {
+            background-color: var(--bg-card);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .timer-panel span { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+        .timer-digits {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ef4444;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            padding: 10px 16px;
+            background-color: var(--bg-card);
+            font-size: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 4px;
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+            font-weight: 500;
+        }
+
+        .indicator-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        .palette-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+        }
+
+        .palette-btn {
+            aspect-ratio: 1;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--palette-unvisited);
+            color: var(--text-main);
+            transition: all 0.15s;
+        }
+
+        .palette-btn.active { 
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+        .palette-btn.unvisited { background-color: var(--palette-unvisited); }
+        .palette-btn.not-answered { background-color: var(--palette-notanswered); color: white; }
+        .palette-btn.answered { background-color: var(--palette-answered); color: white; }
+        .palette-btn.review { background-color: var(--palette-review); color: white; }
+
+        .sidebar-footer {
+            padding: 12px 16px;
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        @media (min-width: 768px) {
+            .main-layout { flex-direction: row; }
+            .exam-area { border-right: 1px solid var(--border-color); padding: 24px; }
+            .sidebar { max-height: none; width: 340px; border-top: none; }
+            .timer-panel { flex-direction: column; text-align: center; gap: 6px; padding: 20px 16px; }
+            .timer-digits { font-size: 1.8rem; }
+            .stats-summary { grid-template-columns: 1fr 1fr; gap: 8px; padding: 16px; }
+            .stat-box { flex-direction: row; justify-content: flex-start; padding: 8px 12px; font-size: 0.85rem; }
+            .palette-grid { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+            .palette-btn { height: 40px; font-size: 0.9rem; }
+            .header-title h1 { font-size: 1.3rem; }
+            .question-box h3 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <h1>RRB महा-सराव परीक्षा पत्र</h1>
+            <p>Group C विशेष सराव पत्र | पासिंग मार्क: ३५</p>
+            <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">तारीख: २८/०६/२०२६</p>
+        </div>
+        <div class="header-controls">
+            <button class="btn-utility" id="theme-toggle">🌓 थीम</button>
+            <button class="btn-utility" id="fullscreen-toggle">🖥️ फुल स्क्रीन</button>
+        </div>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="test-progress"></div>
+    </div>
+
+    <div class="main-layout">
+        <div class="exam-area">
+            <div>
+                <div class="section-indicator" id="section-title">लोड होत आहे...</div>
+                <div class="question-box" id="question-container"></div>
+            </div>
+
+            <div class="action-bar">
+                <div class="action-group">
+                    <button class="btn btn-prev" id="btn-prev" onclick="navigate(-1)">⬅️ मागील</button>
+                    <button class="btn btn-clear" onclick="clearResponse()">Clear</button>
+                </div>
+                <div class="action-group">
+                    <button class="btn btn-review" onclick="markForReview()">⭐ रिव्ह्यू</button>
+                    <button class="btn btn-next" id="btn-next" onclick="navigate(1)">पुढे ➡️</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="timer-panel">
+                <span>वेळ उर्वरित (Time Remaining)</span>
+                <div class="timer-digits" id="timer">90:00</div>
+            </div>
+
+            <div class="stats-summary">
+                <div class="stat-box"><span class="indicator-dot" style="background:#10b981;"></span> सोडवले: <strong id="count-answered">0</strong></div>
+                <div class="stat-box"><span class="indicator-dot" style="background:#ef4444;"></span> बाकी: <strong id="count-notanswered">0</strong></div>
+                <div class="stat-box"><span class="indicator-dot" style="background:#8b5cf6;"></span> रिव्ह्यू: <strong id="count-review">0</strong></div>
+                <div class="stat-box"><span class="indicator-dot" style="background:#e5e7eb;"></span> न पाहिलेले: <strong id="count-unvisited">100</strong></div>
+            </div>
+
+            <div class="palette-area">
+                <div class="palette-grid" id="palette-grid"></div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-submit" onclick="submitExam()">🔴 चाचणी सबमिट करा (Submit)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // भाग १
+            { id: 1, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतात पहिली रेल्वे धावली त्या वर्षी भारताचा गव्हर्नर जनरल कोण होता?", o: ["लॉर्ड डलहौजी", "लॉर्ड कर्जन", "लॉर्ड कॅनिंग", "लॉर्ड वेलेस्ली"], ca: 0, a: null, status: "unvisited" },
+            { id: 2, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारततील कोणत्या राज्यात सर्वात लांब समुद्रकिनारा लाभला आहे?", o: ["महाराष्ट्र", "गुजरात", "तमिळनाडू", "आंध्र प्रदेश"], ca: 1, a: null, status: "unvisited" },
+            { id: 3, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "राज्यसभेचे पदसिद्ध अध्यक्ष कोण असतात?", o: ["राष्ट्रपती", "पंतप्रधान", "उपराष्ट्रपति", "लोकसभा अध्यक्ष"], ca: 2, a: null, status: "unvisited" },
+            { id: 4, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "प्रसिद्ध 'दख्खनचा पठार' प्रामुख्याने कोणत्या खडकापासून बनलेला आहे?", o: ["बॅसाल्ट खडक", "ग्रॅनाइट खडक", "संगमरवर", "वाळूचा खडक"], ca: 0, a: null, status: "unvisited" },
+            { id: 5, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतीय संविधानाचे 'कलम ३७०' कोणत्या राज्याशी संबंधित होते?", o: ["जम्मू आणि काश्मीर", "नागालँड", "आसाम", "सिक्कीम"], ca: 0, a: null, status: "unvisited" },
+            { id: 6, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "काझीरंगा राष्ट्रीय उद्यान कशासाठी प्रसिद्ध आहे?", o: ["एकशिंगी गेंडा", "वाघ", "हत्ती", "सिंह"], ca: 0, a: null, status: "unvisited" },
+            { id: 7, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "अर्थशास्त्राचे जनक कोणाला मानले जाते?", o: ["अॅडम स्मिथ", "अमर्त्य सेन", "कार्ल मार्क्स", "केन्स"], ca: 0, a: null, status: "unvisited" },
+            { id: 8, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारततील पहिल्या महिला रेल्वे मंत्री कोण होत्या?", o: ["ममता बॅनर्जी", "सुषमा स्वराज", "प्रतिभा पाटील", "इंदिरा गांधी"], ca: 0, a: null, status: "unvisited" },
+            { id: 9, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "कोणार्कचे सूर्य मंदिर कोणत्या राज्यात आहे?", o: ["ओडिशा", "पश्चिम बंगाल", "बिहार", "आसाम"], ca: 0, a: null, status: "unvisited" },
+            { id: 10, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "लोहित ही नदी कोणत्या नदीची उपनदी आहे?", o: ["ब्रह्मपुत्रा", "गंगा", "सिंधू", "गोदावरी"], ca: 0, a: null, status: "unvisited" },
+            { id: 11, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "सुप्रसिद्ध 'माउंट एव्हरेस्ट' शिखर कोणत्या देशात स्थित आहे?", o: ["भारत", "नेपाळ", "चीन", "भूतान"], ca: 1, a: null, status: "unvisited" },
+            { id: 12, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "महाराष्ट्रातील सर्वोच्च शिखर कोणते आहे?", o: ["कळसूबाई", "साल्हेर", "महाबळेश्वर", "सप्तशृंगी"], ca: 0, a: null, status: "unvisited" },
+            { id: 13, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतीय रिझर्व्ह बँकेची (RBI) स्थापना कोणत्या वर्षी झाली?", o: ["१९३५", "१९४७", "१९५०", "१९५५"], ca: 0, a: null, status: "unvisited" },
+            { id: 14, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "पॉलिटीकल सायन्समध्ये 'संसदेचे कनिष्ठ सभागृह' कोणाला म्हणतात?", o: ["लोकसभा", "राज्यसभा", "विधानसभा", "विधानपरिषद"], ca: 0, a: null, status: "unvisited" },
+            { id: 15, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "जागतिक पर्यावरण दिन केव्हा साजरा केला जातो?", o: ["५ जून", "११ जुलै", "२ ऑक्टोबर", "५ सप्टेंबर"], ca: 0, a: null, status: "unvisited" },
+            { id: 16, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "झाशीची राणी लक्ष्मीबाई यांचा मृत्यू कोणत्या ठिकाणी झाला?", o: ["ग्वाल्हेर", "झाशी", "कानपूर", "काल्पी"], ca: 0, a: null, status: "unvisited" },
+            { id: 17, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "गौतम बुद्ध यांनी आपले पहिले प्रवचन कोठे दिले?", o: ["सारनाथ", "बोधगया", "लुंबिनी", "कुशीनगर"], ca: 0, a: null, status: "unvisited" },
+            { id: 18, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतीय रेल्वेचे एकूण किती झोन (Zones) आहेत?", o: ["१८", "१६", "१७", "१९"], ca: 0, a: null, status: "unvisited" },
+            { id: 19, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "रेल्वे स्टाफ कॉलेज कोठे स्थित आहे?", o: ["वडोदरा", "पुणे", "दिल्ली", "हैदाबाद"], ca: 0, a: null, status: "unvisited" },
+            { id: 20, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "क्षेत्रफळाच्या दृष्टीने भारताचा जगात कितवा क्रमांक लागतो?", o: ["सातवा", "भाचवा", "सहावा", "आठवा"], ca: 0, a: null, status: "unvisited" },
+            { id: 21, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भाभा अणुसंशोधन केंद्र (BARC) कोठे आहे?", o: ["तुर्भे (मुंबई)", "कलपक्कम", "पोखरण", "श्रीहरीकोटा"], ca: 0, a: null, status: "unvisited" },
+            { id: 22, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "गीत गोविंद या प्रसिद्ध ग्रंथाचे लेखक कोण आहेत?", o: ["जयदेव", "कल्हण", "बाणभट्ट", "विशाखादत्त"], ca: 0, a: null, status: "unvisited" },
+            { id: 23, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "कोणत्या घटनादुरुस्तीला 'मिनी कॉन्स्टिट्युशन' म्हटले जाते?", o: ["४२ वी", "४४ वी", "८६ वी", "५२ वी"], ca: 0, a: null, status: "unvisited" },
+            { id: 24, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "ओझोन वायूचा थर वातावरण्याच्या कोणत्या भागात आढळतो?", o: ["स्थितांबर (Stratosphere)", "तपांबर (Troposphere)", "दलांबर", "आयनांबर"], ca: 0, a: null, status: "unvisited" },
+            { id: 25, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "संयुक्त राष्ट्रसंघाचे (UNO) मुख्यालय कोठे आहे?", o: ["न्यू यॉर्क", "जिनेव्हा", "पॅरिस", "लंडन"], ca: 0, a: null, status: "unvisited" },
+            { id: 26, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "पानिपतची पहिली लढाई कोणत्या वर्षी झाली?", o: ["१५२६", "१५५६", "१७६१", "१४९८"], ca: 0, a: null, status: "unvisited" },
+            { id: 27, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतीय राष्ट्रीय काँग्रेसची स्थापना कोणी केली?", o: ["अॅलन ऑक्टाव्हियन ह्यूम", "लोकमान्य टिळक", "महात्मा गांधी", "व्योमेशचंद्र बॅनर्जी"], ca: 0, a: null, status: "unvisited" },
+            { id: 28, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "हिराकुड धरण कोणत्या नदीवर बांधण्यात आले आहे?", o: ["महानदी", "गोदावरी", "कृष्णा", "नर्मदा"], ca: 0, a: null, status: "unvisited" },
+            { id: 29, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "कथकली हा शास्त्रीय नृत्य प्रकार कोणत्या राज्याचा आहे?", o: ["केरळ", "तमिळनाडू", "आंध्र प्रदेश", "कर्नाटक"], ca: 0, a: null, status: "unvisited" },
+            { id: 30, sec: "भाग १: सामान्य ज्ञान आणि चालू घडामोडी", q: "भारतातील सर्वात मोठी गोड्या पाण्याची सरोवर कोणती?", o: ["वुलर सरोवर", "चिल्का सरोवर", "लोणार सरोवर", "दाल सरोवर"], ca: 0, a: null, status: "unvisited" },
+            
+            // भाग २
+            { id: 31, sec: "भाग २: सामान्य विज्ञान", q: "पाण्याचे कमाल घनता (Maximum Density) किती तापमानाला असते?", o: ["4°C", "0°C", "100°C", "-4°C"], ca: 0, a: null, status: "unvisited" },
+            { id: 32, sec: "भाग २: सामान्य विज्ञान", q: "मानवी शरीरातील सर्वात मोठी ग्रंथी कोणती?", o: ["यकृत (Liver)", "अग्न्याशय", "थायरॉईड", "पियुषिका"], ca: 0, a: null, status: "unvisited" },
+            { id: 33, sec: "भाग २: सामान्य विज्ञान", q: "विद्युत प्रवाहाचे (Electric Current) SI एकक काय आहे?", o: ["अँपिअर", "व्होल्ट", "ओहम", "वॉट"], ca: 0, a: null, status: "unvisited" },
+            { id: 34, sec: "भाग २: सामान्य विज्ञान", q: "पेनिसिलिनचा शोध कोणी लावला?", o: ["अलेक्झांडर फ्लेमिंग", "लुई पाश्चर", "रॉबर्ट कोच", "एडवर्ड जेनर"], ca: 0, a: null, status: "unvisited" },
+            { id: 35, sec: "भाग २: सामान्य विज्ञान", q: "वाहनांमध्ये पाठीमागचे दृश्य पाहण्यासाठी कोणता आरसा वापरतात?", o: ["बहिवक्र आरसा (Convex)", "अंतर्वक्र आरसा", "सपाट आरसा", "यांपैकी नाही"], ca: 0, a: null, status: "unvisited" },
+            { id: 36, sec: "भाग २: सामान्य विज्ञान", q: "लाळेमध्ये (Saliva) कोणते एन्झाईम आढळते?", o: ["टायलीन (Amylase)", "पेप्सिन", "ट्रिप्सिन", "रेनीन"], ca: 0, a: null, status: "unvisited" },
+            { id: 37, sec: "भाग २: सामान्य विज्ञान", q: "हसविणारा वायू (Laughing Gas) म्हणून कोणत्या वायूला ओळखले जाते?", o: ["नायट्रस ऑक्साईड", "नायट्रिक ऑक्साईड", "नायट्रोजन डायऑक्साईड", "carbon मोनॉक्साइड"], ca: 0, a: null, status: "unvisited" },
+            { id: 38, sec: "भाग २: सामान्य विज्ञान", q: "थायराइड ग्रंथीच्या आरोग्यासाठी कोणते मूलद्रव्य आवश्यक असते?", o: ["आयोडिन", "लोह", "कॅल्शियम", "सोडियम"], ca: 0, a: null, status: "unvisited" },
+            { id: 39, sec: "भाग २: सामान्य विज्ञान", q: "ध्वनीची गती खालीलपैकी कोणत्या माध्यमात सर्वात जास्त असते?", o: ["लोखंड (ठोस)", "पाणी (द्रव)", "हवा (वायू)", "निर्वात (Vacuum)"], ca: 0, a: null, status: "unvisited" },
+            { id: 40, sec: "भाग २: सामान्य विज्ञान", q: "कांदे-बटाटे यांना कोंब न फुटण्यासाठी कोणत्या किरणांचा मारा करतात?", o: ["गॅमा किरण", "अल्टाव्हायोलेट किरण", "क्ष-किरण", "इन्फ्रारेड किरण"], ca: 0, a: null, status: "unvisited" },
+            { id: 41, sec: "भाग २: सामान्य विज्ञान", q: "सूर्यप्रकाशापासून मानवी शरीराला कोणते विटामिन मिळते?", o: ["विटामिन D", "विटामिन A", "विटामिन C", "विटामिन B"], ca: 0, a: null, status: "unvisited" },
+            { id: 42, sec: "भाग २: सामान्य विज्ञान", q: "विद्युत बल्बचा फिलामेंट कोणत्या धातूचा बनवलेला असतो?", o: ["टंगस्टन", "नायक्रोम", "तांबे", "अॅल्युमिनियम"], ca: 0, a: null, status: "unvisited" },
+            { id: 43, sec: "भाग २: सामान्य विज्ञान", q: "अॅसिड वर्षा (Acid Rain) प्रामुख्याने कोणत्या वायूंमुळे होते?", o: ["SO₂ आणि NO₂", "CO आणि CO₂", "CH₄ आणि O₃", "यांपैकी नाही"], ca: 0, a: null, status: "unvisited" },
+            { id: 44, sec: "भाग २: सामान्य विज्ञान", q: "लोखंडाचे गंजणे ही कोणत्या प्रकारची प्रक्रिया आहे?", o: ["रासायनिक प्रक्रिया (ऑक्सिडेशन)", "भौतिक प्रक्रिया", "जैविक प्रक्रिया", "यांपैकी नाही"], ca: 0, a: null, status: "unvisited" },
+            { id: 45, sec: "भाग २: सामान्य विज्ञान", q: "मानवी रक्ताचा pH साधारणपणे किती असतो?", o: ["७.४", "६.०", "८.२", "७.०"], ca: 0, a: null, status: "unvisited" },
+            { id: 46, sec: "भाग २: सामान्य विज्ञान", q: "विमानाचा शोध कोणी लावला?", o: ["राईट बंधू", "एडिसन", "मार्कोनी", "न्यूटन"], ca: 0, a: null, status: "unvisited" },
+            { id: 47, sec: "भाग २: सामान्य विज्ञान", q: "धातूंचा राजा असे कोणत्या धातूला संबोधले जाते?", o: ["सोने", "चांदी", "प्लेटिनम", "लोखंड"], ca: 0, a: null, status: "unvisited" },
+            { id: 48, sec: "भाग २: सामान्य विज्ञान", q: "रातांधळेपणा हा आजार कोणत्या जीवनसत्वाच्या अभावामुळे होतो?", o: ["जीवनसत्व अ", "जीवनसत्व ब", "जीवनसत्व क", "जीवनसत्व ड"], ca: 0, a: null, status: "unvisited" },
+            { id: 49, sec: "भाग २: सामान्य विज्ञान", q: "भूकंपाची तीव्रता मोजण्यासाठी कोणते उपकरण वापरतात?", o: ["सिस्मोग्राफ", "बॅरोमीटर", "लॅक्टोमीटर", "अमीटर"], ca: 0, a: null, status: "unvisited" },
+            { id: 50, sec: "भाग २: सामान्य विज्ञान", q: "दुपारच्या वेळी सूर्य डोक्यावर असताना प्रकाश पांढरा का दिसतो?", o: ["प्रकाशाचे विकिरण सर्वात कमी होते", "सर्व रंग शोषले जातात", "प्रकाशाचे अपवर्तन होते", "यांपैकी नाही"], ca: 0, a: null, status: "unvisited" },
+            { id: 51, sec: "भाग २: सामान्य विज्ञान", q: "कॉपर आणि झिंक (तांबे आणि जस्त) यांच्या संमिश्राला काय म्हणतात?", o: ["पितळ (Brass)", "कांस्य (Bronze)", "स्टील", "सोल्डर"], ca: 0, a: null, status: "unvisited" },
+            { id: 52, sec: "भाग २: सामान्य विज्ञान", q: "मलेरिया हा आजार कशामुळे होतो?", o: ["प्लास्मोडियम (परजीवी)", "व्हायरस", "बॅक्टेरिया", "फंगस"], ca: 0, a: null, status: "unvisited" },
+            { id: 53, sec: "भाग २: सामान्य विज्ञान", q: "बर्फाचे पाण्यात रूपांतर होणे हा कोणता बदल आहे?", o: ["भौतिक बदल", "रासायनिक बदल", "नैसर्गिक बदल", "यांपैकी नाही"], ca: 0, a: null, status: "unvisited" },
+            { id: 54, sec: "भाग २: सामान्य विज्ञान", q: "अनुवंशिकतेचा सिद्धांत कोणी मांडला?", o: ["ग्रेगर मेंडेल", "चार्ल्स डार्विन", "लॅमार्क", "अलेक्झांडर ओपेरिन"], ca: 0, a: null, status: "unvisited" },
+            { id: 55, sec: "भाग २: सामान्य विज्ञान", q: "शक्तीचे (Power) SI एकक काय आहे?", o: ["वॉट", "जूल", "न्यूटन", "पास्कल"], ca: 0, a: null, status: "unvisited" },
+            { id: 56, sec: "भाग २: सामान्य विज्ञान", q: "धुण्याच्या सोड्याचे रासायनिक नाव काय आहे?", o: ["सोडियम कार्बोनेट", "सोडियम बायकार्बोनेट", "सोडियम क्लोराईड", "कॅल्शियम कार्बोनेट"], ca: 0, a: null, status: "unvisited" },
+            { id: 57, sec: "भाग २: सामान्य विज्ञान", q: "गुरुत्वाकर्षणाचा शोध कोणी लावला?", o: ["आयझॅक न्यूटन", "अल्बर्ट आइनस्टाइन", "गॅलीलिओ", "केप्लर"], ca: 0, a: null, status: "unvisited" },
+            { id: 58, sec: "भाग २: सामान्य विज्ञान", q: "शुद्ध सोने किती कॅरेटचे असते?", o: ["२४ कॅरेट", "२२ कॅरेट", "१८ कॅरेट", "२० कॅरेट"], ca: 0, a: null, status: "unvisited" },
+            { id: 59, sec: "भाग २: सामान्य विज्ञान", q: "रक्त गोठण्याच्या क्रियेत कोणते विटामिन मदत करते?", o: ["विटामिन K", "विटामिन E", "विटामिन C", "विटामिन A"], ca: 0, a: null, status: "unvisited" },
+            { id: 60, sec: "भाग २: सामान्य विज्ञान", q: "सोन्याची रासायनिक संज्ञा (Symbol) काय आहे?", o: ["Au", "Ag", "Fe", "Cu"], ca: 0, a: null, status: "unvisited" },
+
+            // भाग ३
+            { id: 61, sec: "भाग ३: अंकगणित", q: "दोन संख्यांचे गुणोत्तर ३:४ असून त्यांचा लसावी २४० आहे, तर लहान संख्या कोणती?", o: ["६०", "८०", "४५", "१२०"], ca: 0, a: null, status: "unvisited" },
+            { id: 62, sec: "भाग ३: अंकगणित", q: "एक रक्कम सरळ व्याजाने ८ वर्षात दुप्पट होते, तर व्याजाचा वार्षिक दर काय असेल?", o: ["१२.५%", "१०%", "१५%", "८.५%"], ca: 0, a: null, status: "unvisited" },
+            { id: 63, sec: "भाग ३: अंकगणित", q: "एक train ७२ किमी/तास वेगाने धावत आहे. ती २५ सेकंदात २०० मीटर लांब प्लॅटफॉर्म पार करते, तर ट्रेनची लांबी किती?", o: ["३०० मीटर", "२५० मीटर", "२०० मीटर", "१५० मीटर"], ca: 0, a: null, status: "unvisited" },
+            { id: 64, sec: "भाग ३: अंकगणित", q: "A एक काम १० दिवसांत आणि B तेच काम १५ दिवसांत करतो, तर दोघे मिळून ते काम किती दिवसांत करतील?", o: ["६ दिवस", "५ दिवस", "८ दिवस", "७.५ दिवस"], ca: 0, a: null, status: "unvisited" },
+            { id: 65, sec: "भाग ३: अंकगणित", q: "३/४ + ५/६ - २/३ चे मूल्य काय असेल?", o: ["११/१२", "७/१२", "१३/१२", "५/६"], ca: 0, a: null, status: "unvisited" },
+            { id: 66, sec: "भाग ३: अंकगणित", q: "एका वस्तूची खरेदी किंमत ४०० रुपये असून ती २०% नफा घेऊन विकली, तर तिची विक्री किंमत किती?", o: ["४८० रुपये", "४२० रुपये", "४६० रुपये", "५०० रुपये"], ca: 0, a: null, status: "unvisited" },
+            { id: 67, sec: "भाग ३: अंकगणित", q: "पहिल्या ५ मूळ संख्यांची (Prime Numbers) सरासरी किती आहे?", o: ["५.६", "५.०", "६.२", "४.८"], ca: 0, a: null, status: "unvisited" },
+            { id: 68, sec: "भाग ३: अंकगणित", q: "जर १५ पुस्तकांची खरेदी किंमत २० पुस्तकांच्या विक्री किंमतीइतकी असेल, तर शेकडा तोटा किती?", o: ["२५%", "२०%", "३०%", "१५%"], ca: 0, a: null, status: "unvisited" },
+            { id: 69, sec: "भाग ३: अंकगणित", q: "एका वर्तुळाची त्रिज्या ७ सेमी आहे, तर त्याचे क्षेत्रफळ किती चौरस सेमी असेल?", o: ["१५४", "४४", "७७", "३0८"], ca: 0, a: null, status: "unvisited" },
+            { id: 70, sec: "भाग ३: अंकगणित", q: "दोन संख्यांची बेरीज ४५ असून त्यांचा फरक ५ आहे, तर त्या संख्यांचे गुणोत्तर काय?", o: ["५:४", "९:१", "६:५", "३:२"], ca: 0, a: null, status: "unvisited" },
+            { id: 71, sec: "भाग ३: अंकगणित", q: "एक सायकलस्वार २ तासात ३६ किमी अंतर कापतो, तर त्याचा वेग मीटर प्रति सेकंदमध्ये किती?", o: ["५ मी/से", "१० मी/से", "१८ मी/से", "१५ मी/से"], ca: 0, a: null, status: "unvisited" },
+            { id: 72, sec: "भाग ३: अंकगणित", q: "०.४ × ०.०४ × ०.००४ = किती?", o: ["०.००००६४", "०.०००६४", "०.००६४", "०.०६४"], ca: 0, a: null, status: "unvisited" },
+            { id: 73, sec: "भाग ३: अंकगणित", q: "६० चे ३५% + ८० चे २५% = किती?", o: ["४१", "३५", "४५", "३८"], ca: 0, a: null, status: "unvisited" },
+            { id: 74, sec: "भाग ३: अंकगणित", q: "एका वर्गातील ३० विद्यार्थ्यांचे सरासरी वय १५ वर्षे आहे. शिक्षकाचे वय मिळवल्यास सरासरी १ ने वाढते, तर शिक्षकाचे वय किती?", o: ["४६ वर्षे", "४५ वर्षे", "३१ वर्षे", "४० वर्षे"], ca: 0, a: null, status: "unvisited" },
+            { id: 75, sec: "भाग ३: अंकगणित", q: "एका संख्येच्या ४०% मधून ४० वजा केल्यास ४० उरतात, तर ती संख्या कोणती?", o: ["२००", "१००", "१५०", "४०"], ca: 0, a: null, status: "unvisited" },
+            { id: 76, sec: "भाग ३: अंकगणित", q: "दरसाल दरशेकडा ५ टक्के दराने ३००० रुपयांचे ३ वर्षांचे चक्रवाढ व्याज किती होईल?", o: ["४७२.८८ रुपये", "४५० रुपये", "५०० रुपये", "४०० रुपये"], ca: 0, a: null, status: "unvisited" },
+            { id: 77, sec: "भाग ३: अंकगणित", q: "घनाचे एकूण पृष्ठफळ ६०० चौ. सेमी आहे, तर त्याचे घनफळ किती असेल?", o: ["१००० घनमूळ सेमी", "६०० घनमूळ सेमी", "१०० घनमूळ सेमी", "५०० घनमूळ सेमी"], ca: 0, a: null, status: "unvisited" },
+            { id: 78, sec: "भाग ३: अंकगणित", q: "जर x:y = ३:८, तर (७x + ३y) : (६x - ३y) चे गुणोत्तर काय?", o: ["११:३", "३:१", "२१:१२", "४:३"], ca: 0, a: null, status: "unvisited" },
+            { id: 79, sec: "भाग ३: अंकगणित", q: "१ ते १०० पर्यंतच्या सर्व नैसर्गिक संख्यांची बेरीज किती होती?", o: ["५०५०", "५०००", "५१००", "४५५०"], ca: 0, a: null, status: "unvisited" },
+            { id: 80, sec: "भाग ३: अंकगणित", q: "एक वस्तू २५० रुपयांना विकल्याने २५% तोटा होतो, तर २५% नफा मिळवण्यासाठी ती वस्तू कितीला विकावी लागेल?", o: ["४१६.६६ रुपये", "३७५ रुपये", "५०० रुपये", "४०० रुपये"], ca: 0, a: null, status: "unvisited" },
+
+            // भाग ४
+            { id: 81, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "गटात न बसणारा शब्द ओळखा (विषम पर्याय):", o: ["जानेवारी", "मार्च", "जुलै", "नोव्हेंबर"], ca: 3, a: null, status: "unvisited" },
+            { id: 82, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "मालिका पूर्ण करा: ५, ११, २३, ४७, ९५, ?", o: ["१९१", "१९०", "१८९", "१९३"], ca: 0, a: null, status: "unvisited" },
+            { id: 83, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जर एका सांकेतिक भाषेत 'TRAIN' ला 'Wudlq' लिहिले जाते, तर 'RAIL' ला काय लिहिले जाईल?", o: ["Udlo", "Udor", "Txlo", "Vfop"], ca: 1, a: null, status: "unvisited" },
+            { id: 84, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "एक माणूस उत्तरेकडे ५ किमी चालतो, नंतर उजवीकडे वळून ४ किमी चालतो आणि पुन्हा उजवीकडे वळून ५ किमी चालतो. तर तो मूळ स्थानापासून किती अंतरावर आहे?", o: ["४ किमी", "५ किमी", "९ किमी", "६ किमी"], ca: 0, a: null, status: "unvisited" },
+            { id: 85, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जसा 'न्यायालय' चा संबंध 'न्याय' याच्याशी आहे, तसा 'शाळा' चा संबंध कशाशी आहे?", o: ["शिक्षण", "शिक्षक", "विद्यार्थी", "वर्ग"], ca: 0, a: null, status: "unvisited" },
+            { id: 86, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "घड्याळात ३:०० वाजले असता तासकाटा आणि मिनिटकाटा यांच्यात किती अंशाचा कोन होईल?", o: ["९०°", "१८०°", "६०°", "४५°"], ca: 0, a: null, status: "unvisited" },
+            { id: 87, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "अक्षर मालिका पूर्ण करा: B, D, F, H, J, ?", o: ["L", "K", "M", "N"], ca: 0, a: null, status: "unvisited" },
+            { id: 88, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जर 'PEN' चा कोड १६५१४ असा आहे, तर 'BOY' चा कोड काय असेल?", o: ["२१५२५", "२६५२५", "३१५२५", "२१४२४"], ca: 0, a: null, status: "unvisited" },
+            { id: 89, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "नातेसंबंध: A हा B चा भाऊ आहे, C ही A ची आई आहे, तर B चे C शी काय नाते आहे?", o: ["मुलगा किंवा मुलगी", "मुलगा", "मुलगी", "भाचा"], ca: 0, a: null, status: "unvisited" },
+            { id: 90, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "गटात न बसणारी संख्या ओळखा: २७, ६४, १२५, १४४", o: ["१४४", "२७", "६४", "१२५"], ca: 0, a: null, status: "unvisited" },
+            { id: 91, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जर काल सोमवार होता, तर उद्यानंतरचा तिसरा दिवस कोणता असेल?", o: ["शनिवार", "शुक्रवार", "रविवार", "गुरुवार"], ca: 0, a: null, status: "unvisited" },
+            { id: 92, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "मालिका पूर्ण करा: २, ६, १२, २०, ३०, ?", o: ["४२", "४०", "३६", "५०"], ca: 0, a: null, status: "unvisited" },
+            { id: 93, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "दिशा ज्ञान: सूर्योदयाच्या वेळी राम सूर्याकडे तोंड करून उभा आहे, त्याची डावी बाजू कोणत्या दिशेला असेल?", o: ["उत्तर", "दक्षिण", "पूर्व", "पश्चिम"], ca: 0, a: null, status: "unvisited" },
+            { id: 94, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जर '+' म्हणजे '*', '-' म्हणजे '/', '*' म्हणजे '+' आणि '/' म्हणजे '-', तर: ८ + ४ - २ = ?", o: ["१६", "१०", "१२", "८"], ca: 0, a: null, status: "unvisited" },
+            { id: 95, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "विजोड पद शोधा:", o: ["तांबे", "जस्त", "पितळ", "लोखंड"], ca: 2, a: null, status: "unvisited" },
+            { id: 96, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "अक्षर मालिका: AZ, BY, CX, ?", o: ["DW", "EV", "DU", "DX"], ca: 0, a: null, status: "unvisited" },
+            { id: 97, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "जर एका सांकेतिक भाषेत WATER ला XIUFS असे लिहिले जाते, तर COLD ला काय लिहिले जाईल?", o: ["DPME", "DQNF", "BMMC", "EPMF"], ca: 3, a: null, status: "unvisited" },
+            { id: 98, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "एका रांगेत अमोलचा क्रमांक डावीकडून १२ वा आणि उजवीकडून १५ वा आहे, तर रांगेत एकूण किती मुले आहेत?", o: ["२६", "२७", "२८", "२५"], ca: 0, a: null, status: "unvisited" },
+            { id: 99, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "खालीलपैकी कोणते वर्ष लीप वर्ष (Leap Year) आहे?", o: ["२०२४", "२०२२", "२०२१", "२०१५"], ca: 0, a: null, status: "unvisited" },
+            { id: 100, sec: "भाग ४: बुद्धिमत्ता चाचणी", q: "योग्य पर्याय निवडा: सिंह : गुहा :: माणूस : ?", o: ["घर", "बंगला", "झोपडी", "कार्यालय"], ca: 0, a: null, status: "unvisited" }
+        ];
+
+        let currentIndex = 0;
+        let totalSeconds = 90 * 60; 
+
+        function init() {
+            createPalette();
+            loadQuestion(0);
+            startTimer();
+            updateStats();
+        }
+
+        function createPalette() {
+            const grid = document.getElementById('palette-grid');
+            grid.innerHTML = '';
+            questions.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.id = `palette-btn-${index}`;
+                btn.className = `palette-btn ${q.status}`;
+                btn.innerText = q.id;
+                btn.onclick = () => jumpToQuestion(index);
+                grid.appendChild(btn);
+            });
+        }
+
+        function loadQuestion(index) {
+            currentIndex = index;
+            const qData = questions[index];
+
+            if (qData.status === 'unvisited') {
+                qData.status = 'not-answered';
+            }
+
+            document.getElementById('section-title').innerText = qData.sec;
+            
+            let html = `<h3>प्र. ${qData.id}. ${qData.q}</h3><ul class="options-list">`;
+            qData.o.forEach((opt, oIdx) => {
+                const isSelected = qData.a === oIdx ? 'selected' : '';
+                const label = String.fromCharCode(65 + oIdx); 
+                html += `
+                    <li class="option-item ${isSelected}" onclick="selectOption(${oIdx})">
+                        <input type="radio" name="q-opt" ${qData.a === oIdx ? 'checked' : ''}>
+                        <strong>(${label})</strong> ${opt}
+                    </li>
+                `;
+            });
+            html += `</ul>`;
+            
+            document.getElementById('question-container').innerHTML = html;
+
+            document.getElementById('btn-prev').disabled = index === 0;
+            document.getElementById('btn-next').innerText = index === questions.length - 1 ? "सबमिट करा" : "पुढे ➡️";
+
+            document.querySelectorAll('.palette-btn').forEach(b => b.classList.remove('active'));
+            const currentBtn = document.getElementById(`palette-btn-${index}`);
+            if (currentBtn) currentBtn.className = `palette-btn ${qData.status} active`;
+
+            updateStats();
+        }
+
+        function selectOption(oIdx) {
+            questions[currentIndex].a = oIdx;
+            questions[currentIndex].status = 'answered';
+            loadQuestion(currentIndex); 
+
+            setTimeout(() => {
+                if (currentIndex < questions.length - 1) {
+                    navigate(1);
+                }
+            }, 500);
+        }
+
+        function clearResponse() {
+            questions[currentIndex].a = null;
+            questions[currentIndex].status = 'not-answered';
+            loadQuestion(currentIndex);
+        }
+
+        function markForReview() {
+            questions[currentIndex].status = 'review';
+            if (currentIndex < questions.length - 1) {
+                navigate(1);
+            } else {
+                updateStats();
+            }
+        }
+
+        function navigate(step) {
+            let nextIdx = currentIndex + step;
+            if (nextIdx >= 0 && nextIdx < questions.length) {
+                loadQuestion(nextIdx);
+                document.querySelector('.exam-area').scrollTop = 0;
+            }
+        }
+
+        function jumpToQuestion(index) {
+            loadQuestion(index);
+        }
+
+        function updateStats() {
+            let answered = 0, notAnswered = 0, review = 0, unvisited = 0;
+            
+            questions.forEach((q, idx) => {
+                const btn = document.getElementById(`palette-btn-${idx}`);
+                if (btn) btn.className = `palette-btn ${q.status} ${idx === currentIndex ? 'active' : ''}`;
+
+                if (q.status === 'answered') answered++;
+                else if (q.status === 'not-answered') notAnswered++;
+                else if (q.status === 'review') review++;
+                else if (q.status === 'unvisited') unvisited++;
+            });
+
+            document.getElementById('count-answered').innerText = answered;
+            document.getElementById('count-notanswered').innerText = notAnswered;
+            document.getElementById('count-review').innerText = review;
+            document.getElementById('count-unvisited').innerText = unvisited;
+
+            const progressPercent = (answered / questions.length) * 100;
+            document.getElementById('test-progress').style.width = `${progressPercent}%`;
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if (totalSeconds <= 0) {
+                    clearInterval(interval);
+                    alert("परीक्षा वेळ संपली आहे! तुमची टेस्ट ऑटोमॅटिक सबमिट होत आहे.");
+                    submitExam();
+                } else {
+                    totalSeconds--;
+                    let mins = Math.floor(totalSeconds / 60);
+                    let secs = totalSeconds % 60;
+                    timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function submitExam() {
+            let answeredCount = questions.filter(q => q.status === 'answered' || q.status === 'review').length;
+            
+            if(confirm(`तुम्हाला खात्री आहे का की तुम्हाला चाचणी सबमिट करायची आहे?\nतुम्ही एकूण ${answeredCount} प्रश्न सोडवले आहेत.`)) {
+                
+                let score = 0;
+                questions.forEach(q => {
+                    if (q.a !== null && q.a === q.ca) {
+                        score++;
+                    }
+                });
+
+                let statusMessage = "";
+                if (score >= 35) {
+                    statusMessage = `🎉 अभिनंदन! तुम्ही परीक्षा पास झालात! 🎉`;
+                } else {
+                    statusMessage = `👍 नाराज होऊ नका, अजून सराव करा. तुम्ही नापास झालात.`;
+                }
+
+                alert(`--- परीक्षा निकाल (Result) ---\n\nएकूण गुण: ${score} / १००\nनिकाल: ${statusMessage}`);
+                window.location.reload(); 
+            }
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        document.getElementById('fullscreen-toggle').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    alert(`फुलस्क्रीन मोड सुरू करता आला नाही: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
